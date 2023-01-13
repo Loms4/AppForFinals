@@ -24,13 +24,12 @@ class MainActivity : AppCompatActivity() {
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
-            // Use Firebase Authentication or any other authentication library to sign in the user
-            // using the email and password
-            // Handle errors if any
+
+
         }
 
         registerTextView.setOnClickListener {
-            // Use the Navigation component or an Intent to navigate to the registration fragment
+
         }
     }
 }
