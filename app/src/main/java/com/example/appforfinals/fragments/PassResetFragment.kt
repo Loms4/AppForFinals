@@ -1,38 +1,48 @@
-package com.example.appforfinals.fragments
+package com.example.appforfinals
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.appforfinals.R
+import androidx.navigation.Navigation
+import com.google.firebase.auth.FirebaseAuth
 
-class PassResetFragment: Fragment(R.layout.fragment_passreset){
-    private lateinit var emailEditText: EditText
-    private lateinit var resetPasswordButton: Button
+class ResetPassFragmenti : Fragment(R.layout.fragment_passreset) {
+    private lateinit var mail : EditText
+    private lateinit var send : Button
 
-    override fun c
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        emailEditText = view.findViewById(R.id.et_email)
-        resetPasswordButton = view.findViewById(R.id.btn_reset_password)
+        mail=view.findViewById(R.id.resetmail)
+        send=view.findViewById(R.id.resetmailpass)
+        val navController = Navigation.findNavController(view)
 
-        resetPasswordButton.setOnClickListener {
-            val email = emailEditText.text.toString()
-            if (isValidEmail(email)) {
-                // Use Firebase Authentication to send password reset email
-                // Handle errors if any
-            } else {
-                // Show an error message
+
+
+        send.setOnClickListener{
+            val email = mail.text.toString()
+
+            if(email.isEmpty()){
+                Toast.makeText(this@ResetPassFragmenti.requireActivity(), "Please, input Email", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+
+            FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                .addOnCompleteListener{ task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(this@ResetPassFragmenti.requireActivity(), "Recovery link sent, Check Email", Toast.LENGTH_SHORT).show()
+                        val logini = ResetPassFragmentiDirections.actionResetPassFragmentiToLoginFragmenti()
+                        navController.navigate(logini)
+
+                    }
+                    else {
+                        Toast.makeText(this@ResetPassFragmenti.requireActivity(), "There was an error", Toast.LENGTH_SHORT).show()
+                    }
+
+                }
         }
-
-        return view
-    }
-
-    private fun isValidEmail(email: String): Boolean {
-        // Validate email
-        return true
-    }
-}
+    }}

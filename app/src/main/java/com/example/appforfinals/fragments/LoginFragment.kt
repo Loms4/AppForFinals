@@ -1,44 +1,71 @@
-package com.example.appforfinals.fragments
+package com.example.appforfinals
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
+import androidx.fragment.app.Fragment
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
-import androidx.fragment.app.Fragment
-import com.example.appforfinals.R
-
-class LoginFragment : Fragment(R.layout.fragment_login_layout) {
-    private lateinit var emailEditText: EditText
-    private lateinit var passwordEditText: EditText
-    private lateinit var loginButton: Button
-    private lateinit var registerTextView: TextView
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val view = inflater.inflate(R.layout.fragment_login_layout, container, false)
+import android.widget.Toast
+import androidx.navigation.Navigation
+import com.example.appforfinals.fragments.ProfileFragment
+import com.google.firebase.auth.FirebaseAuth
 
 
-        emailEditText = view.findViewById(R.id.et_email)
-        passwordEditText = view.findViewById(R.id.et_password)
-        loginButton = view.findViewById(R.id.btn_login)
-        registerTextView = view.findViewById(R.id.tv_register)
 
-        loginButton.setOnClickListener {
-            val email = emailEditText.text.toString()
-            val password = passwordEditText.text.toString()
-            // Use Firebase Authentication or any other authentication library to sign in the user
-            // using the email and password
-            // Handle errors if any
+class LoginFragmenti : Fragment(R.layout.fragment_login_layout) {
+    private lateinit var mail : EditText
+    private lateinit var pass : EditText
+    private lateinit var buttonlogin : Button
+    private lateinit var register : Button
+    private lateinit var buttonreset : Button
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
+        mail=view.findViewById(R.id.loginemail)
+        pass=view.findViewById(R.id.loginpass)
+        buttonlogin=view.findViewById(R.id.login)
+        register=view.findViewById(R.id.register)
+        buttonreset=view.findViewById(R.id.resetpass)
+
+
+        val navController = Navigation.findNavController(view)
+
+
+        register.setOnClickListener{
+
+            val registracia = LoginFragmentiDirections.actionLoginFragmentiToRegisterFragmenti()
+            navController.navigate(registracia)
+
         }
 
-        registerTextView.setOnClickListener {
-            // Use the Navigation component or an Intent to navigate to the registration fragment
+        buttonreset.setOnClickListener{
+            val resetipass = LoginFragmentiDirections.actionLoginFragmentiToResetPassFragmenti()
+            navController.navigate(resetipass)
         }
-    return view}
-}
+
+        buttonlogin.setOnClickListener{
+            val email = mail.text.toString()
+            val password = pass.text.toString()
+
+
+            if(email.isEmpty() || password.isEmpty()){
+                Toast.makeText(this@LoginFragmenti.requireActivity(), "გთხოვთ, შეიყვანეთ Email და პაროლი", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+
+            FirebaseAuth.getInstance()
+                .signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful){
+                        val intent = Intent (this@LoginFragmenti.requireContext(),ProfileFragment::class.java)
+                        startActivity(intent)
+
+                    }
+                    else {
+                        Toast.makeText(this@LoginFragmenti.requireActivity(), "გთხოვთ, შეიყვანეთ სწორი Email და პაროლი", Toast.LENGTH_SHORT).show()
+                    }
+                }}}}
